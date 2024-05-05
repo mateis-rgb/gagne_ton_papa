@@ -1,64 +1,119 @@
-from numpy import zeros, array
+#! /usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Matéis Rgb et Maxence Rgn.
 
 class Piece:
-	def __init__(self, name, color, identifier, shapes):
-		self.name: str = name
-		self.color: str = color
-		self.identifier: int = identifier
-		self.shapes: list[list[int]] = shapes
+	"""
+	Classe représentant une pièce.
 
-	def replace_id(self):
+	Attributes:
+		nom (str): Le nom de la pièce.
+		couleur (str): La couleur de la pièce.
+		identifiant (int): L'identifiant de la pièce.
+		formes (list[list[int]]): Les différentes formes de la pièce.
+	"""
+	def __init__(self, nom, couleur, identifiant, formes):
+		self.nom: str = nom
+		self.couleur: str = couleur
+		self.identifiant: int = identifiant
+		self.formes: list[list[int]] = formes
+
+	def remplacer_id(self):
+		"""
+		Méthode pour remplacer l'identifiant de la pièce.
+		"""
 		pass
 
-	def get(self):
+	def obtenir(self):
+		"""
+		Méthode pour obtenir les informations de la pièce.
+
+		Returns:
+			dict: Un dictionnaire contenant les informations de la pièce.
+		"""
 		return {
-			"name": self.name, 
-			"color": self.color, 
-			"identifier": self.identifier, 
-			"shapes": self.shapes
+			"nom": self.nom, 
+			"couleur": self.couleur, 
+			"identifiant": self.identifiant, 
+			"formes": self.formes
 		} 
-	
-	def rotate_90_degrees(self):
+
+	def rotation_90_degres(self):
+		"""
+		Méthode pour effectuer une rotation de 90 degrés de la pièce.
+		"""
 		# Récupérer les dimensions de la forme de la pièce
-		rows = len(self.shapes)  # Nombre de lignes de la forme de pièce
-		cols = len(self.shapes[0])  # Nombre de colonnes de la forme de pièce
+		lignes = len(self.formes)  # Nombre de lignes de la forme de pièce
+		colonnes = len(self.formes[0])  # Nombre de colonnes de la forme de pièce
 
 		# Créer une nouvelle forme de pièce pour stocker la rotation
-		rotated_shape = [[0 for _ in range(rows)] for _ in range(cols)]
+		forme_rot = [[0 for _ in range(lignes)] for _ in range(colonnes)]
 
 		# Parcourir la forme de la pièce d'origine
-		for i in range(rows):
-			for j in range(cols):
+		for i in range(lignes):
+			for j in range(colonnes):
 				# Effectuer la rotation en déplaçant les éléments de la forme de pièce d'origine
 				# vers la nouvelle forme de pièce selon la formule de rotation de 90 degrés dans le sens des aiguilles d'une montre
-				rotated_shape[j][rows - 1 - i] = self.shapes[i][j]
+				forme_rot[j][lignes - 1 - i] = self.formes[i][j]
 
 		# Mettre à jour la forme de pièce de l'objet Piece avec la forme tournée
-		self.shapes = rotated_shape
+		self.formes = forme_rot
 
 
 class BoiteDePieces:
+	"""
+	Classe représentant une boîte de pièces.
+
+	Attributes:
+		pieces (dict[str, Piece]): Un dictionnaire contenant les pièces de la boîte.
+	"""
 	def __init__(self):
 		self.pieces: dict[str, Piece] = {}
 
 	def ajouter_piece(self, piece: Piece):
-		self.pieces[piece.name] = piece.get()
+		"""
+		Méthode pour ajouter une pièce à la boîte.
+
+		Args:
+			piece (Piece): La pièce à ajouter.
+		"""
+		self.pieces[piece.nom] = piece.obtenir()
 
 	def afficher(self):
+		"""
+		Méthode pour afficher les pièces de la boîte.
+		"""
 		print(self.pieces)
 
 
 class AireDeJeu:
+	"""
+	Classe représentant une aire de jeu.
+
+	Attributes:
+		N (int): La taille de l'aire de jeu.
+		matrice (list[list[int]]): La matrice représentant l'aire de jeu.
+	"""
 	def __init__(self, N: int):
 		self.N: int = N
-		self.matrice: list[list[int]] = zeros((5, N), dtype=int)
-
+		self.matrice: list[list[int]] = [[0 for k in range(N)] for _ in range(5)]
 
 	def afficher(self):
+		"""
+		Méthode pour afficher la matrice de l'aire de jeu.
+		"""
 		print(self.matrice)
 
-
 	def peut_placer(self, piece: Piece) -> list[list[int]]:
+		"""
+		Méthode pour vérifier si une pièce peut être placée dans l'aire de jeu.
+
+		Args:
+			piece (Piece): La pièce à placer.
+
+		Returns:
+			list[list[int]]: Une liste de coordonnées des positions valides.
+		"""
 		# Initialise une liste vide pour stocker les coordonnées des positions valides
 		positions_valides = []
 
@@ -67,56 +122,67 @@ class AireDeJeu:
 		n = len(self.matrice[0])  # Nombre de colonnes
 
 		# Récupérer les dimensions de la forme de la pièce
-		x = len(piece.shapes)  # Nombre de lignes de la forme de la pièce
-		y = len(piece.shapes[0])  # Nombre de colonnes de la forme de la pièce
+		x = len(piece.formes)  # Nombre de lignes de la forme de la pièce
+		y = len(piece.formes[0])  # Nombre de colonnes de la forme de la pièce
 
 		# Parcourir la matrice de l'aire de jeu
 		for i in range(m - x + 1):
 			for j in range(n - y + 1):
 				# Vérifier si la forme de la pièce peut être placée à cette position
-				can_place = True
-				for row in range(x):
-					for col in range(y):
+				peut_placer = True
+				for ligne in range(x):
+					for colonne in range(y):
 						# Vérifier si l'emplacement dans la matrice est libre (vaut 0)
 						# et si la forme de la pièce correspond à cette position
-						if self.matrice[i + row][j + col] != 0 and piece.shapes[row][col] == 1:
+						if self.matrice[i + ligne][j + colonne] != 0 and piece.formes[ligne][colonne] == 1:
 							# Si l'emplacement est occupé dans la matrice et que la forme de la pièce est également
 							# occupée à cette position, la pièce ne peut pas être placée ici
-							can_place = False
+							peut_placer = False
 							break
-					if not can_place:
+					if not peut_placer:
 						break
-				if can_place:
+				if peut_placer:
 					# Si la forme de la pièce peut être placée à cette position, ajouter les coordonnées à la liste
 					positions_valides.append((i, j))
 		
 		# Retourner la liste des coordonnées des positions valides
 		return positions_valides
 
-
 	def placer(self, piece: Piece, position: list[int]):
+		"""
+		Méthode pour placer une pièce dans l'aire de jeu.
+
+		Args:
+			piece (Piece): La pièce à placer.
+			position (list[int]): Les coordonnées de la position où placer la pièce.
+		"""
 		# Récupérer les dimensions de la forme de la pièce
-		x = len(piece.shapes)  # Nombre de lignes de la forme de la pièce
-		y = len(piece.shapes[0])  # Nombre de colonnes de la forme de la pièce
+		x = len(piece.formes)  # Nombre de lignes de la forme de la pièce
+		y = len(piece.formes[0])  # Nombre de colonnes de la forme de la pièce
 		
 		# Récupérer les coordonnées de la position où placer la pièce
-		row, col = position
+		ligne, colonne = position
 		
 		# Parcourir la forme de la pièce
 		for i in range(x):
 			for j in range(y):
 				# Vérifier si la forme de la pièce a une valeur de 1 à cette position
-				if piece.shapes[i][j] == 1:
+				if piece.formes[i][j] == 1:
 					# Placer l'identifiant de la pièce à la position correspondante dans la matrice de l'aire de jeu
-					self.matrice[row + i][col + j] = piece.identifier
+					self.matrice[ligne + i][colonne + j] = piece.identifiant
 
+	def supprimer(self, identifiant: int):
+		"""
+		Méthode pour supprimer une pièce de l'aire de jeu.
 
-	def supprimer(self, identifier: int):
+		Args:
+			identifiant (int): L'identifiant de la pièce à supprimer.
+		"""
 		# Parcourir la matrice de l'aire de jeu
 		for i in range(len(self.matrice)):
 			for j in range(len(self.matrice[0])):
 				# Si l'élément de la matrice correspond à l'identifiant de la pièce
-				if self.matrice[i][j] == identifier:
+				if self.matrice[i][j] == identifiant:
 					# Remplacer l'identifiant par 0 (emplacement vide)
 					self.matrice[i][j] = 0
 
@@ -125,7 +191,7 @@ def main() -> None:
 	# Définition des pièces
 	boite = BoiteDePieces()
 
-	piece1 = Piece("PointRouge", "red", 1, [[1]]) # comment faites vous les . 
+	piece1 = Piece("PointRouge", "red", 1, [[1]])
 	piece2 = Piece("PointRouge", "red", 2, [[1]])
 	piece3 = Piece("PointViolet", "magenta", 4, [[1]])
 	piece4 = Piece("BRose", "pink", 8, [[1,0], [1, 1], [1, 1]])
@@ -141,11 +207,10 @@ def main() -> None:
 	piece14 = Piece("TMarron", "maroon", 8192, [[1, 1, 1], [0, 1, 0]])
 	piece15 = Piece("TBleuClair", "lightblue", 16384, [[1, 1, 1]])
 	piece16 = Piece("SJaune", "yellow", 32768, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
-	piece17 = Piece("SBleuClair", "lightblue", 65536, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]]) # comment faites vous le S 
+	piece17 = Piece("SBleuClair", "lightblue", 65536, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
 	piece18 = Piece("SViolet", "magenta", 131072, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
 
-	# Définition des autres pièces...
-
+	# Ajout des pièces dans la boite
 	boite.ajouter_piece(piece1)
 	boite.ajouter_piece(piece2)
 	boite.ajouter_piece(piece3)
