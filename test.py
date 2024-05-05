@@ -7,9 +7,6 @@ class Piece:
 		self.identifier: int = identifier
 		self.shapes: list[list[int]] = shapes
 
-	def replace_id(self):
-		pass
-
 	def get(self):
 		return {
 			"name": self.name, 
@@ -36,7 +33,6 @@ class Piece:
 		# Mettre à jour la forme de pièce de l'objet Piece avec la forme tournée
 		self.shapes = rotated_shape
 
-
 class BoiteDePieces:
 	def __init__(self):
 		self.pieces: dict[str, Piece] = {}
@@ -47,16 +43,15 @@ class BoiteDePieces:
 	def afficher(self):
 		print(self.pieces)
 
-
 class AireDeJeu:
 	def __init__(self, N: int):
 		self.N: int = N
-		self.matrice: list[list[int]] = zeros((5, N), dtype=int)
-
+		# Création d'une matrice vide de taille 5xN remplie de zéros
+		self.matrice: list[list[int]] = [[0 for k in range(N)] for _ in range(5)]
 
 	def afficher(self):
+		# Affichage de la matrice de l'aire de jeu
 		print(self.matrice)
-
 
 	def peut_placer(self, piece: Piece) -> list[list[int]]:
 		# Initialise une liste vide pour stocker les coordonnées des positions valides
@@ -110,7 +105,6 @@ class AireDeJeu:
 					# Placer l'identifiant de la pièce à la position correspondante dans la matrice de l'aire de jeu
 					self.matrice[row + i][col + j] = piece.identifier
 
-
 	def supprimer(self, identifier: int):
 		# Parcourir la matrice de l'aire de jeu
 		for i in range(len(self.matrice)):
@@ -120,55 +114,42 @@ class AireDeJeu:
 					# Remplacer l'identifiant par 0 (emplacement vide)
 					self.matrice[i][j] = 0
 
-
 def main() -> None:
 	# Définition des pièces
 	boite = BoiteDePieces()
 
-	piece1 = Piece("PointRouge", "red", 1, [[1]]) # comment faites vous les . 
-	piece2 = Piece("PointRouge", "red", 2, [[1]])
-	piece3 = Piece("PointViolet", "magenta", 4, [[1]])
-	piece4 = Piece("BRose", "pink", 8, [[1,0], [1, 1], [1, 1]])
-	piece5 = Piece("CJaune", "yellow", 16, [[1, 1], [1, 0], [1, 1]])
-	piece6 = Piece("IOrangeClair", "lightorange", 32, [[1], [1]])
-	piece7 = Piece("IOrangeClair", "lightorange", 64, [[1], [1]])
-	piece8 = Piece("IOrangeFonce", "darkorange", 128, [[1], [1]])
-	piece9 = Piece("IRose", "pink", 256,[[1], [1]])
-	piece10 = Piece("LMarron", "maroon", 512, [[1, 0], [1, 0], [1, 1]])
-	piece11 = Piece("LVert", "green", 1024, [[1, 0], [1, 0], [1, 1]])
-	piece12 = Piece("LBleu", "blue", 2048, [[1, 0], [1, 0], [1, 1]])
-	piece13 = Piece("LOrangeFonce", "darkorange", 4096, [[1, 0], [1, 0], [1, 1]])
-	piece14 = Piece("TMarron", "maroon", 8192, [[1, 1, 1], [0, 1, 0]])
-	piece15 = Piece("TBleuClair", "lightblue", 16384, [[1, 1, 1]])
-	piece16 = Piece("SJaune", "yellow", 32768, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
-	piece17 = Piece("SBleuClair", "lightblue", 65536, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]]) # comment faites vous le S 
-	piece18 = Piece("SViolet", "magenta", 131072, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
-
+	piece1 = Piece("PointRouge", "red", 1, [[1]])
+	piece2 = Piece("PointViolet", "magenta", 2, [[1]])
+	piece3 = Piece("CRose", "pink", 4, [[1, 1], [1, 0], [1, 1]])
+	
 	# Définition des autres pièces...
 
-	boite.ajouter_piece(piece1)
-	boite.ajouter_piece(piece2)
-	boite.ajouter_piece(piece3)
-	boite.ajouter_piece(piece4)
-	boite.ajouter_piece(piece5)
-	boite.ajouter_piece(piece6)
-	boite.ajouter_piece(piece7)
-	boite.ajouter_piece(piece8)
-	boite.ajouter_piece(piece9)
-	boite.ajouter_piece(piece10)
-	boite.ajouter_piece(piece11)
-	boite.ajouter_piece(piece12)
-	boite.ajouter_piece(piece13)
-	boite.ajouter_piece(piece14)
-	boite.ajouter_piece(piece15)
-	boite.ajouter_piece(piece16)
-	boite.ajouter_piece(piece17)
-	boite.ajouter_piece(piece18)
+	print(piece3.shapes)
 
-	plateau = AireDeJeu(4)
-	plateau.afficher()
-	
-	boite.afficher()
+	piece3.rotate_90_degrees()
+
+	print(piece3.shapes)
+
+	piece3.rotate_90_degrees()
+
+	print(piece3.shapes)
+
+	# boite.ajouter_piece(piece1)
+	# boite.ajouter_piece(piece2)
+	# boite.ajouter_piece(piece3)
+
+	# plateau = AireDeJeu(4)
+	# plateau.afficher()
+
+	# # boite.afficher()
+
+	# plateau.placer(piece3, [0, 0])
+
+	# plateau.afficher()
+
+	# plateau.supprimer(4)
+
+	# plateau.afficher()
 
 if __name__ == '__main__':
 	main()
