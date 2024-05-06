@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Copyright (c) 2024 Matéis Rgb et Maxence Rgn.
+# Copyright © 2024 Matéis Rgb & Maxence Rgn.
 
 class Piece:
 	"""
@@ -11,12 +11,21 @@ class Piece:
 		couleur (str): La couleur de la pièce.
 		identifiant (int): L'identifiant de la pièce.
 		formes (list[list[int]]): Les différentes formes de la pièce.
+		_rang (int): rang de la pièce (taille)
 	"""
 	def __init__(self, nom, couleur, identifiant, formes):
 		self.nom: str = nom
 		self.couleur: str = couleur
 		self.identifiant: int = identifiant
 		self.formes: list[list[int]] = formes
+		
+		self._rang: int = None
+
+	def definir_rang(self):
+		"""
+		Méthode pour calculer le rang d'une pièce, en se basant sur sa taille.
+		"""
+		pass
 
 	def remplacer_id(self):
 		"""
@@ -79,6 +88,18 @@ class BoiteDePieces:
 		"""
 		self.pieces[piece.nom] = piece.obtenir()
 
+	def supprimer_piece(self, piece: Piece):
+		"""
+		Méthode pour supprimer une pièce de la boîte.
+		"""
+		pass
+
+	def classement(self):
+		"""
+		Méthode pour classer les pièces en fonction de leur rang.
+		"""
+		pass
+
 	def afficher(self):
 		"""
 		Méthode pour afficher les pièces de la boîte.
@@ -103,6 +124,12 @@ class AireDeJeu:
 		Méthode pour afficher la matrice de l'aire de jeu.
 		"""
 		print(self.matrice)
+
+	def recherche(self):
+		"""
+		Méthode pour rechercher une solution au plateau de jeu, en essayant de placer en priorité les pièces les plus grande (plus petit rank)
+		"""
+		pass
 
 	def peut_placer(self, piece: Piece) -> list[list[int]]:
 		"""
@@ -139,8 +166,10 @@ class AireDeJeu:
 							# occupée à cette position, la pièce ne peut pas être placée ici
 							peut_placer = False
 							break
+
 					if not peut_placer:
 						break
+
 				if peut_placer:
 					# Si la forme de la pièce peut être placée à cette position, ajouter les coordonnées à la liste
 					positions_valides.append((i, j))
@@ -188,9 +217,9 @@ class AireDeJeu:
 
 
 def main() -> None:
-	# Définition des pièces
 	boite = BoiteDePieces()
 
+	# Définition des pièces
 	piece1 = Piece("PointRouge", "red", 1, [[1]])
 	piece2 = Piece("PointRouge", "red", 2, [[1]])
 	piece3 = Piece("PointViolet", "magenta", 4, [[1]])
@@ -206,9 +235,9 @@ def main() -> None:
 	piece13 = Piece("LOrangeFonce", "darkorange", 4096, [[1, 0], [1, 0], [1, 1]])
 	piece14 = Piece("TMarron", "maroon", 8192, [[1, 1, 1], [0, 1, 0]])
 	piece15 = Piece("TBleuClair", "lightblue", 16384, [[1, 1, 1]])
-	piece16 = Piece("SJaune", "yellow", 32768, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
-	piece17 = Piece("SBleuClair", "lightblue", 65536, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
-	piece18 = Piece("SViolet", "magenta", 131072, [[1, 1], [1, 0], [1, 1], [0, 1], [1, 1]])
+	piece16 = Piece("SJaune", "yellow", 32768, [[0, 1, 1], [1, 1, 0]])
+	piece17 = Piece("SBleuClair", "lightblue", 65536, [[0, 1, 1], [1, 1, 0]])
+	piece18 = Piece("SViolet", "magenta", 131072, [[0, 1, 1], [1, 1, 0]])
 
 	# Ajout des pièces dans la boite
 	boite.ajouter_piece(piece1)
