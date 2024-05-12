@@ -1,59 +1,60 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 # Copyright © 2024 Matéis Rgb & Maxence Rgn.
 
 class Piece:
 	"""
 	Classe représentant une pièce.
 
-	Attributes:
+	Attributes
+	
 		nom (str): Le nom de la pièce.
 		couleur (str): La couleur de la pièce.
 		identifiant (int): L'identifiant de la pièce.
-		formes (list[list[int]]): Les différentes formes de la pièce.
+		forme (list[list[int]]): Les différentes forme de la pièce.
 		_rang (int): rang de la pièce (taille)
 	"""
-	def __init__(self, nom, couleur, identifiant, formes):
+	def __init__(self, nom, couleur, identifiant, forme):
 		self.nom: str = nom
 		self.couleur: str = couleur
 		self.identifiant: int = identifiant
-		self.formes: list[list[int]] = formes
+		self.forme: list[list[int]] = forme
 		
 		self._rang: int = None
 
 	def definir_rang(self):
 		"""
-		Méthode pour calculer le rang d'une pièce, en se basant sur sa taille.
+		Méthode pour calculer le rang d'une pièce, en se basant sur sa taille, la taille étant défini par le nombre de case qui sont remplis dans la matrice de la forme.
 		"""
-		pass
+
+		cpt: int = 0
+
+		for row in self.forme:
+			for elm in row:
+				if elm != 0:
+					cpt += 1
+
+		self._rang = cpt
+
 
 	def remplacer_id(self):
 		"""
 		Méthode pour remplacer l'identifiant de la pièce.
 		"""
-		pass
-
-	def obtenir(self):
-		"""
-		Méthode pour obtenir les informations de la pièce.
-
-		Returns:
-			dict: Un dictionnaire contenant les informations de la pièce.
-		"""
-		return {
-			"nom": self.nom, 
-			"couleur": self.couleur, 
-			"identifiant": self.identifiant, 
-			"formes": self.formes
-		} 
+		for i in range(len(self.forme)):
+			for j in range(len(self.forme[i])):
+				if self.forme[i][j] == 1:
+					self.forme[i][j] = self.identifiant
+		
 
 	def rotation_90_degres(self):
 		"""
 		Méthode pour effectuer une rotation de 90 degrés de la pièce.
 		"""
 		# Récupérer les dimensions de la forme de la pièce
-		lignes = len(self.formes)  # Nombre de lignes de la forme de pièce
-		colonnes = len(self.formes[0])  # Nombre de colonnes de la forme de pièce
+		lignes = len(self.forme)  # Nombre de lignes de la forme de pièce
+		colonnes = len(self.forme[0])  # Nombre de colonnes de la forme de pièce
 
 		# Créer une nouvelle forme de pièce pour stocker la rotation
 		forme_rot = [[0 for _ in range(lignes)] for _ in range(colonnes)]
@@ -63,10 +64,10 @@ class Piece:
 			for j in range(colonnes):
 				# Effectuer la rotation en déplaçant les éléments de la forme de pièce d'origine
 				# vers la nouvelle forme de pièce selon la formule de rotation de 90 degrés dans le sens des aiguilles d'une montre
-				forme_rot[j][lignes - 1 - i] = self.formes[i][j]
+				forme_rot[j][lignes - 1 - i] = self.forme[i][j]
 
 		# Mettre à jour la forme de pièce de l'objet Piece avec la forme tournée
-		self.formes = forme_rot
+		self.forme = forme_rot
 
 
 class BoiteDePieces:
@@ -75,9 +76,12 @@ class BoiteDePieces:
 
 	Attributes:
 		pieces (dict[str, Piece]): Un dictionnaire contenant les pièces de la boîte.
+		_classement (dict[int, list[Piece]]): Un dictionnaire contenant les pièces de la boîte classé selon leur rang (inversement au rang, les plus petites clées sont les pièces les plus grandes).
 	"""
 	def __init__(self):
 		self.pieces: dict[str, Piece] = {}
+		self._classement: dict[str, list[Piece]] = {}
+
 
 	def ajouter_piece(self, piece: Piece):
 		"""
@@ -86,19 +90,61 @@ class BoiteDePieces:
 		Args:
 			piece (Piece): La pièce à ajouter.
 		"""
-		self.pieces[piece.nom] = piece.obtenir()
+		self.pieces[piece.nom] = piece
+
 
 	def supprimer_piece(self, piece: Piece):
 		"""
 		Méthode pour supprimer une pièce de la boîte.
-		"""
-		pass
 
-	def classement(self):
+		Args:
+			piece (Piece): La pièce à supprimer.
+		"""
+		# Vérifier si la pièce est présente dans la boîte
+		if piece.nom in self.pieces:
+			# Supprimer la pièce de la boîte
+			del self.pieces[piece.nom]
+			
+			# Actualiser le classement des pièces
+			self.definir_classement()
+
+
+	def definir_classement(self):
 		"""
 		Méthode pour classer les pièces en fonction de leur rang.
 		"""
-		pass
+		# Initialisation du dictionnaire de classement
+		self._classement = {}
+
+		# Parcourir les pièces de la boîte
+		for nom, piece in self.pieces.items():
+			# Vérifier si le rang de la pièce a déjà été défini
+			if piece._rang is None:
+				piece.definir_rang()
+
+			# Récupérer le rang de la pièce
+			rang_piece = piece._rang
+
+			# Utiliser un rang inversé pour classer les pièces de la plus grande à la plus petite
+			rang_inverse = -rang_piece
+
+			# Convertir le rang inverse en rang positif
+			rang_positif = abs(rang_inverse)
+
+			# Vérifier si le rang positif existe déjà dans le classement
+			if rang_positif in self._classement:
+				# Ajouter la pièce à la liste correspondante au rang positif
+				self._classement[rang_positif].append(piece)
+			else:
+				# Créer une nouvelle liste pour ce rang positif et y ajouter la pièce
+				self._classement[rang_positif] = [piece]
+
+		# Trier le classement en fonction des rangs positifs (clés du dictionnaire)
+		self._classement = dict(sorted(self._classement.items(), reverse=True))
+	
+		for i in range(len(self._classement.items())//2):
+			self._classement[rang_positif], self._classement[len(self._classement.items())-rang_positif+1] = self._classement[len(self._classement.items())-rang_positif+1], self._classement[rang_positif]
+
 
 	def afficher(self):
 		"""
@@ -125,11 +171,32 @@ class AireDeJeu:
 		"""
 		print(self.matrice)
 
-	def recherche(self):
+	def recherche(self, boiteDePieces: BoiteDePieces):
 		"""
-		Méthode pour rechercher une solution au plateau de jeu, en essayant de placer en priorité les pièces les plus grande (plus petit rank)
+		Méthode pour rechercher une solution au plateau de jeu en plaçant en priorité les pièces les plus grandes (plus petit rang).
+
+		Args:
+			boiteDePieces (BoiteDePieces): La boîte de pièces contenant les pièces à placer sur l'aire de jeu.
 		"""
-		pass
+		# Parcourir chaque rang de pièces dans la boîte de pièces
+		for rang in boiteDePieces._classement.values():
+			# Parcourir chaque pièce dans le rang
+			for piece in rang:
+				# Vérifier si la pièce peut être placée dans l'aire de jeu
+				position_possible = self.peut_placer(piece)
+				if position_possible is not None:
+					# Si une position valide est trouvée, placer la pièce et passer à la suivante
+					self.placer(piece, position_possible)
+					break
+				else:
+					# Si la pièce ne peut pas être placée dans sa forme d'origine, essayer de la faire pivoter et réessayer
+					for _ in range(3):
+						piece.rotation_90_degres()  # Faire pivoter la pièce de 90 degrés
+						position_possible = self.peut_placer(piece)
+						if position_possible is not None:
+							# Si une position valide est trouvée après la rotation, placer la pièce et passer à la suivante
+							self.placer(piece, position_possible)
+							break
 
 	def peut_placer(self, piece: Piece) -> list[list[int]]:
 		"""
@@ -149,8 +216,8 @@ class AireDeJeu:
 		n = len(self.matrice[0])  # Nombre de colonnes
 
 		# Récupérer les dimensions de la forme de la pièce
-		x = len(piece.formes)  # Nombre de lignes de la forme de la pièce
-		y = len(piece.formes[0])  # Nombre de colonnes de la forme de la pièce
+		x = len(piece.forme)  # Nombre de lignes de la forme de la pièce
+		y = len(piece.forme[0])  # Nombre de colonnes de la forme de la pièce
 
 		# Parcourir la matrice de l'aire de jeu
 		for i in range(m - x + 1):
@@ -161,7 +228,7 @@ class AireDeJeu:
 					for colonne in range(y):
 						# Vérifier si l'emplacement dans la matrice est libre (vaut 0)
 						# et si la forme de la pièce correspond à cette position
-						if self.matrice[i + ligne][j + colonne] != 0 and piece.formes[ligne][colonne] == 1:
+						if self.matrice[i + ligne][j + colonne] != 0 and piece.forme[ligne][colonne] == 1:
 							# Si l'emplacement est occupé dans la matrice et que la forme de la pièce est également
 							# occupée à cette position, la pièce ne peut pas être placée ici
 							peut_placer = False
@@ -186,8 +253,8 @@ class AireDeJeu:
 			position (list[int]): Les coordonnées de la position où placer la pièce.
 		"""
 		# Récupérer les dimensions de la forme de la pièce
-		x = len(piece.formes)  # Nombre de lignes de la forme de la pièce
-		y = len(piece.formes[0])  # Nombre de colonnes de la forme de la pièce
+		x = len(piece.forme)  # Nombre de lignes de la forme de la pièce
+		y = len(piece.forme[0])  # Nombre de colonnes de la forme de la pièce
 		
 		# Récupérer les coordonnées de la position où placer la pièce
 		ligne, colonne = position
@@ -196,7 +263,7 @@ class AireDeJeu:
 		for i in range(x):
 			for j in range(y):
 				# Vérifier si la forme de la pièce a une valeur de 1 à cette position
-				if piece.formes[i][j] == 1:
+				if piece.forme[i][j] == 1:
 					# Placer l'identifiant de la pièce à la position correspondante dans la matrice de l'aire de jeu
 					self.matrice[ligne + i][colonne + j] = piece.identifiant
 
@@ -260,9 +327,14 @@ def main() -> None:
 	boite.ajouter_piece(piece18)
 
 	plateau = AireDeJeu(4)
-	plateau.afficher()
+	# plateau.afficher()
 	
-	boite.afficher()
+	# boite.afficher()
+
+	boite.definir_classement()
+
+	plateau.recherche(boite)
+
 
 if __name__ == '__main__':
 	main()
