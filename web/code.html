@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partie Algorithmie</title>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,6 +38,16 @@
 
         <h1 class="text-xl font-bold text-left m-8">Fonction de recherch récursive :</h1>
 <pre><code class="language-python">def recherche_recursive(self, pieces, index):
+    """
+    Recherche récursive d'une solution en plaçant les pièces sur l'aire de jeu.
+
+    Args:
+        pieces (list): Liste des pièces à placer.
+        index (int): Indice de la pièce actuelle dans la liste des pièces.
+
+    Returns:
+        bool: True si une solution est trouvée, False sinon.
+    """
     if index == len(pieces):
         return True
 
@@ -89,7 +99,7 @@
     # Afficher l'aire de jeu avec Pygame
     plateau.afficher_aire(boite)
 
-    if __name__ == "__main__":
+if __name__ == "__main__":
     main()
 </code></pre>
 
