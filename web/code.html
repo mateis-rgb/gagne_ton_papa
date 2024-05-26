@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Partie Algorithmie</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
     <style>
         code {
             font-family: 'JetBrains Mono', monospace;
@@ -28,26 +33,66 @@
     <div class="max-w-4xl mx-auto py-10 px-4">
         <h1 class="text-4xl font-bold text-center mb-8">Partie Algorithmie</h1>
         <p class="text-lg leading-relaxed mb-4 text-justify">
-            Voici quelques exemples de code que nous utilisons dans le développement de notre jeu. Les commentaires indiquent où insérer le code et fournissent des explications sur son fonctionnement.
+            Voici quelques exemples de code que nous utilisons dans le développement de notre jeu. Les commentaires fournissent des explications sur son fonctionnement.
         </p>
-        <pre><code class="language-python"># Initialisation du jeu
-def initialize_game():
-    # Code pour initialiser le jeu
-    pass
 
-# Fonction pour résoudre un casse-tête en 2D
-def solve_puzzle_2d(puzzle):
-    # Code pour résoudre le casse-tête
-    solution = []
+        <h1 class="text-xl font-bold text-left m-8">Fonction de recherch récursive :</h1>
+<pre><code class="language-python">def recherche_recursive(self, pieces, index):
+    if index == len(pieces):
+        return True
 
-    return solution
+    piece = pieces[index]
+    transformations = piece.generer_transformations()
 
-# Fonction pour vérifier la solution
-def check_solution(solution):
-    # Code pour vérifier si la solution est correcte
-    is_correct = True
-    return is_correct
+    for forme in transformations:
+        piece.forme = forme
+        for i in range(len(self.matrice)):
+            for j in range(len(self.matrice[0])):
+                if self.peut_placer(piece, i, j):
+                    self.placer(piece, (i, j))
+                    if self.recherche_recursive(pieces, index + 1):
+                        return True
+                    self.supprimer(piece, (i, j))
+
+    return False
 </code></pre>
+
+        <h1 class="text-xl font-bold text-left m-8">Fonction main :</h1>
+<pre><code class="language-python">def main():
+    # Définir les pièces
+    pieces = [
+        Piece("A", "red", 1, [[1, 1, 1], [0, 1, 0]]),
+        Piece("B", "blue", 2, [[1, 1], [1, 1]]),
+        Piece("C", "green", 3, [[1, 1, 1, 1]]),
+        Piece("D", "yellow", 4, [[1, 1], [1, 0]]),
+        Piece("E", "magenta", 5, [[1, 1, 1], [1, 0, 0]]),
+        Piece("F", "pink", 6, [[1, 0], [1, 1], [0, 1]]),
+        Piece("G", "lightorange", 7, [[1, 1], [0, 1], [0, 1]]),
+        Piece("H", "darkorange", 8, [[1, 1, 1, 1, 1]]),
+        Piece("I", "maroon", 9, [[1], [1], [1]]),
+        Piece("J", "lightblue", 10, [[1, 1, 1], [1, 1, 0]])
+    ]
+
+    # Initialiser la boîte de pièces
+    boite = BoiteDePieces()
+    for piece in pieces:
+        boite.ajouter_piece(piece)
+    boite.definir_classement()
+
+    # Initialiser l'aire de jeu
+    plateau = AireDeJeu(10)
+    if plateau.recherche(boite):
+        plateau.afficher()
+    else:
+        print("Aucune solution trouvée.")
+
+    # Afficher l'aire de jeu avec Pygame
+    plateau.afficher_aire(boite)
+
+    if __name__ == "__main__":
+    main()
+</code></pre>
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-python.min.js"></script>
